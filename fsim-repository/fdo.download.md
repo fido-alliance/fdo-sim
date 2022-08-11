@@ -14,17 +14,16 @@ The following table describes key-value pairs for the download fsim.
 | fdo.download.length | int | Specifies the expected length of the file in bytes   | 
 | fdo.download.data | bstr | Writs a block of data up to 1014 bytes in size to the end of file  | 
 
+The following table describes the expected message flow for the download fsim:
 
-The following table describes the expected message flow for the download fsim
-
-| Device sends                    | Owner sends                     | Meaning   |
-| ------------------------------ :|:----------------------------------:|:------------------------:|
-| | [fdo.download.active, True] | Owner instructs device to activate the download fsim  | 
-|  [fdo.download.active, True] | | Device confirms the module is available | 
-| | [fdo.download.name, "foo"]|  Owner instructs device to create file "foo" | 
-| | [fdo.download.length, 700]|  Owner instructs device to expect 700 total bytes | 
-| | [fdo.download.data,  590200.. ]|  Owner sends the first 512 bytes to the file | 
-| | [fdo.download.data, 188]|  Owner sends the final 188 bytes to the file | 
+| Device sends  | Owner sends | Meaning   |
+|:----------------------:|:----------------------------------:|:------------------------:|
+| -  | [fdo.download.active, True] | Owner instructs device to activate the download fsim  | 
+|  [fdo.download.active, True] | - | Device confirms the module is available | 
+| - | [fdo.download.name, "foo"]|  Owner instructs device to create file "foo" | 
+| - | [fdo.download.length, 700]|  Owner instructs device to expect 700 total bytes | 
+| - | [fdo.download.data,  590200.. ]|  Owner sends the first 512 bytes to the file | 
+| - | [fdo.download.data, 188]|  Owner sends the final 188 bytes to the file | 
 |  [fdo.download.complete, 0]| |  The device acknowledges that download is complete and sends optional hash| 
 
 
