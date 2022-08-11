@@ -40,7 +40,8 @@ Device to owner
 The following table describes the expected message flow for the command fsim
 
 | Device sends                    | Owner sends                     | Meaning   |
-| ------------------------------ :|:----------------------------------:|:------------------------:|
+| ------------------------------:|:----------------------------------:|:------------------------:|
+| x | x | x |
 
 
 
