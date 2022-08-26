@@ -73,3 +73,21 @@ Device to owner
 ['command:exit_code,int]
 
 
+From Randy email, after discussion with Patrick:
+Owner to device
+[command:active,True]
+['command:command,'sh'
+['command:args, String array
+['command:'may_fail',Bool
+['command:'return_stdout' Bool
+['command':return_stderr',Bool
+['command:execute, cbor null  (I think we preferred cbor empty vs null) Some parsers required some extra work to handle null.
+['command:sig,int]
+]
+Device to owner
+['command:command,'sh'
+['command:args, String array
+['command:stdout',bstr]  can be streamed
+['command:stderr',bstr]  can be streamed
+['command:exit_code,int]
+
