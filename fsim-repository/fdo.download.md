@@ -25,9 +25,9 @@ The following table describes key-value pairs for the download fsim.
 | o --> d   | `fdo.download.data` | `bstr` | Writes a block of data up to 1014 bytes in size to the end of file  | 
 | d --> o   | `fdo.download.done` | `int` | Indicates that the download has completed, returns the length of the target file.  Value of -1 indicates the sha-384 check failed, or other file write error |
 
-* Geof: what happens to relative pathnames?
+* Geof: what happens to relative pathnames?   Relative to the client.  Assume this is a workspace area, should be cleared before the protocol.
 * Geof: is there a concept of currnet directory?
-* Geof: what about a device for Windows?
+* Geof: what about a device for Windows?  that's why you want to use relative pathnames
 * Geof: Adding length prefix and streaming modes.
 
 The following table describes the expected message flow for the download fsim:
