@@ -3,11 +3,11 @@ onboarding operations that can be performed on a given FDO device. Fsim key-valu
 device to interpret the key-value pairs in accordance with the fsim specification.
 
 ## fdo.download fsim definition
-The download module provides the functionality to download a binary file from an owner to a device. There is no provision for textual conversion (e.g., UTF-8 to UTF-16).  Any format conversion should be done either in the sender, before the file is sent, or in the receiver.  
+The download module provides the functionality to download a binary file from the FDO Owner to the FDO Device. There is no provision for format conversion (e.g., UTF-8 to UTF-16).  Any format conversion needed must be accomplished either in the sender, before the file is sent, or in the receiver.  In Linux-based Devices it is assumed that the target file contains the exact data transmitted, byte-for-byte.
 
 There are two modes of file transfer.  In length-prefix mode, the size of the file is sent first, using the `download.length` message.  Then the file data is sent.  When the file contents have been sent using one or more `download.data` messages, the receiver returns the length of file received in `download.done`.  
 
-In streaming mode, the `download.length` message is not used.  Data for the file is sent.  When all the bytes have been transmitted a final `download.data` message of zero bytes indicates the end of file. 
+In streaming mode, the `download.length` message is not used.  Data for the file is sent by the FDO Owner.  When all the bytes have been transmitted, the Owner sends a final `download.data` message of zero bytes to indicate the end of file transmission. 
 
 In both cases, a zero length file requires a `download.data` message with a zero byte bstr in it.
 
