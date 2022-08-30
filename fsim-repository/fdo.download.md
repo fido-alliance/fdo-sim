@@ -13,6 +13,13 @@ In both cases, a zero length file requires a `download.data` message with a zero
 
 Although the FSIM's communicate over a reliable channel, transfering a file from one file system to another involves more mechanism than just this channel.  Therefore, it is recommended that the file contents be verified after the file transmission.  This may be accomplished by transmitting a SHA-384 hash of the file before the first `data` message.  If the SHA-384 hash is received, the receiver MUST compute a SHA-384 hash of its own and compare the two hashes. If the hashes fail to match, the final `download.done` message MUST return a length of -1, regardless of the length of the file received.
 
+Relative pathnames are permitted.  This may be useful for downloading short files, such as script files, to the device.  Downloading a large file requires knowledge of the storage architecture of the target; this might be obtained in advance for a particular model of device or might be queried using a script file.  
+
+It may be assumed that relative pathnames always end up in the same place for a given device.  So it is possible to download a file and expect it to be in the same default directory as the command modules uses.  
+
+**Geof: discussion of current directory should be in the command module**
+**Geof: to download to specific path: either know the path or run a command to get the path.**
+
 The following table describes key-value pairs for the download fsim.
 
 
@@ -51,7 +58,7 @@ This example gives message flow for streaming:
 | - | `[fdo.download.name, "foo"]`  |  Owner instructs device to create file "foo" | 
 | - | `[fdo.download.data,  (bstr)590200...]` |  Owner sends the first 512 bytes to the file | 
 | - | `[fdo.download.data, 188]` |  Owner sends the final 188 bytes to the file | 
-| - | `[fdo.download.data, 0]` |  Owner sends the final 188 bytes to the file | 
+| - | `[fdo.download.data, 0]` |  Owner indicates entire file has been sent | 
 | `[fdo.download.active, True]` | - | Device confirms the module is available | 
 | `[fdo.download.done, 700]`    | - |  The device acknowledges that download is complete | 
 
