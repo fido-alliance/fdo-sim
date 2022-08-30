@@ -24,15 +24,11 @@ The following table describes key-value pairs for the wget fsim.
 |:----------|:------------------------------|:---------------------------|:----------|
 | o <-> d   | `fdo.wget.active` | `bool` | Instructs the device to activate or deactivate the module  | 
 | o --> d   | `fdo.wget.sha-384` | `bytes[48]` | (Optional) Contains the sha-384 of the file that will be retrieved. |
-| o --> d   | `fdo.wget.name` | `tstr` | Indicates the target filename where the file will be stored |
+| o --> d   | `fdo.wget.name` | `tstr` | Indicates the target filename where the file will be stored.  Thiis an optional argument.  Default from URL.  Explain above. |
 | o --> d   | `fdo.wget.url` | `tstr` | Indicates the URL to be retrieved   |
 | d --> o   | `fdo.wget.error` | `tstr` | Indicates failure with error message |
 | d --> o   | `fdo.wget.done` | `int` | Indicates the length of the file successfully retrieved.  If the `sha-384` message has been received, the receiver computes the sha-384 of the file downloaded before it sends this message and sends an error message if the transfer failed. |
 
-* Geof: what happens to relative pathnames?
-* Geof: is there a concept of currnet directory?
-* Geof: what about a device for Windows?
-* Geof: Adding length prefix and streaming modes.
 
 The following table describes the expected message flow for the wget fsim:
 
