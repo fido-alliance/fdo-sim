@@ -6,8 +6,13 @@ device to interpret the key-value pairs in accordance with the fsim specificatio
 The command module provides the functionality to execute arbitrary commands on the device.
 The following table describes key-value pairs for the command fsim.
 
+The `fdo.command` module offers the ability to invoke a shell command on the FDO device during onboarding.  For this FSIM, only one command may be in progress at a time.  It is not recommended to buffer more than one command in a ServiceInfo message, because a buffer deadlock may result for some devices.  (The authors accept that a more complex FSIM may permit multiple buffered commands to execute simultaneously, and welcome submissions).
 
+Commmands run to termination synchronously with the ServiceInfo processing.  I.e., no new ServiceInfo is processed between the time that command:execute is processed and when that command finishes with command:exitcode.  Only a single command may be buffered at a time.  This means that each command must be in its own ServiceInfo message.  The message command:sig applies to the currently executing command.
 
+It is intended that this FSIM support multiple OS targets, including Linux and MS-Windows.  Small devices might implement shell-like functionality for specific commands, to limit the need for custom FSIM's.  
+
+The messages: command, args, may_fail, return_stdout, return_stderr may appear in any order, so long as they appear before the execute commmand.
 
 | Direction | fdo.command.*                  | Value                             | Meaning                 |
 |:----------|:-------------------------------|:----------------------------------|:------------------------|
@@ -22,12 +27,6 @@ The following table describes key-value pairs for the command fsim.
 | d --> o   | stdout | bstr | A block of data containing standard out | 
 | d --> o   | stderr | bstr | A block of data containing standard error | 
 | d --> o   | exitcode | int | A block of data containing standard error.  Follows *nix convention, where exitcode==0 is a normal return. | 
-
-Only one command may be in progress at a time.  Do not buffer more than one command in a ServiceInfo message.  (The authors accept that a more complex FSIM may permit multiple buffered commands to execute simultaneously, and welcome submissions).
-
-Commmands run to termination synchronously with the ServiceInfo processing.  I.e., no new ServiceInfo is processed between the time that command:execute is processed and when that command finishes with command:exitcode.  Only a single command may be buffered at a time.  This means that each command must be in its own ServiceInfo message.  The message command:sig applies to the currently executing command.
-
-The messages: command, args, may_fail, return_stdout, return_stderr may appear in any order, so long as they appear before the execute commmand.
 
 The following table describes the expected message flow for the command fsim (long entries reference to below the table):
 
