@@ -48,7 +48,7 @@ A successful response is carried in a fdo.csr.simpleenroll-res message, which ca
 
 ## fdo.csr.simplereenroll-req and fdo.csr.simplereenroll-res
 
-A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (i.e., a PKCS #10 Certification Request [RFC2986]) to request a certificate. The payload in the fdo.csr.simplereenroll-req message is encoded as a 'application/pkcs10' payload. The Certification Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
+A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (i.e., a PKCS #10 Certification Request [RFC2986]) to request a certificate. The payload in the fdo.csr.simplereenroll-req message is encoded as a 'application/pkcs10' payload. The Certificate Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
 
 A successful response is carried in a fdo.csr.simplereenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
 
