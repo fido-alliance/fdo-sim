@@ -30,7 +30,7 @@ The following table describes key-value pairs for the csr fsim.
 | o --> d   | `fdo.csr.serverkeygen-res` | `tstr` | Certificate and private key |
 | o <-- d   | `fdo.csr.csrattrs-req` | `uint` | Request for CSR attributes |
 | o --> d   | `fdo.csr.csrattrs-res` | `tstr`  | CSR attributes |
-| o <-> d   | `fdo.csr.error` | `uint`  | Error Indication |
+| o --> d   | `fdo.csr.error` | `uint`  | Error Indication |
 
 ## fdo.csr.cacerts-req and fdo.csr.cacerts-res
 
@@ -76,16 +76,18 @@ The following table lists error codes returned by the fdo.csr.error message.
 |                       |                           | fdo.csr.simplereenroll-req    |
 |                       |                           | fdo.csr.serverkeygen-req      | 
 |                       |                           | fdo.csr.csrattrs-req          | 
-| 2                     | Feature not supported.    | fdo.csr.csrattrs-req          |
-|                       |                           | fdo.csr.serverkeygen-req      |
-| 3                     | Rate exceeded. Try later. | fdo.csr.simpleenroll-req      |
+| 2                     | Unauthorized.             | fdo.csr.simpleenroll-req      |
 |                       |                           | fdo.csr.simplereenroll-req    |
 |                       |                           | fdo.csr.serverkeygen-req      | 
-| 4                     | Unsupported format.       | fdo.csr.cacerts-req           |
-| 5                     | Insufficient storage.     | fdo.csr.cacerts-res           |
-|                       |                           | fdo.csr.simpleenroll-res      |
-|                       |                           | fdo.csr.serverkeygen-res      | 
+|                       |                           | fdo.csr.csrattrs-req          | 
+| 3                     | Feature not supported.    | fdo.csr.csrattrs-req          |
+|                       |                           | fdo.csr.serverkeygen-req      |
+| 4                     | Rate exceeded. Try later. | fdo.csr.simpleenroll-req      |
+|                       |                           | fdo.csr.simplereenroll-req    |
+|                       |                           | fdo.csr.serverkeygen-req      | 
+| 5                     | Unsupported format.       | fdo.csr.cacerts-req           |
 
+An error of type 'unauthorized' is used when the request by the client cannot be processed by the Device Management Service, Certification Authority (CA) or Registration Authority (RA) due to insufficient permissions. The error of type 'bad request' is used when the request is malformed and parsing failed. 
 
 ## Example
 
