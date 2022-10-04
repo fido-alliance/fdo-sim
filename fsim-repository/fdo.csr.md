@@ -30,7 +30,7 @@ The following table describes key-value pairs for the CSR FSIM.
 | o --> d   | `fdo.csr.serverkeygen-res` | `tstr` | Certificate and private key |
 | o <-- d   | `fdo.csr.csrattrs-req` | `uint` | Request for CSR attributes |
 | o --> d   | `fdo.csr.csrattrs-res` | `tstr`  | CSR attributes |
-| o --> d   | `fdo.csr.error` | `uint`  | Error response |
+| o --> d   | `fdo.csr.error` | `uint`  | Error Indication |
 
 ## fdo.csr.cacerts-req and fdo.csr.cacerts-res
 
@@ -44,7 +44,6 @@ A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (
 The Certification Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
 
 A successful response is carried in a fdo.csr.simpleenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
-
 
 ## fdo.csr.simplereenroll-req and fdo.csr.simplereenroll-res
 
@@ -67,9 +66,28 @@ A device requests CSR attributes from the owning Device Management Service and c
 
 A successful response informs the device about the fields to include in a CSR. This Certificate Signing Request (CSR) attribute messages is encoded in application/csrattrs format, as defined in Section 4.5.2 of RFC 7030.
 
-## Error handling
+## fdo.csr.error
 
-TBD: This section describes the possible error cases. 
+The following table lists error codes returned by the fdo.csr.error message. 
+
+| Error Number          | Description               | Sent in response to           |
+|:----------------------|:--------------------------|:------------------------------|
+| 1                     | Bad request.              | fdo.csr.simpleenroll-req      |
+|                       |                           | fdo.csr.simplereenroll-req    |
+|                       |                           | fdo.csr.serverkeygen-req      | 
+|                       |                           | fdo.csr.csrattrs-req          | 
+| 2                     | Unauthorized.             | fdo.csr.simpleenroll-req      |
+|                       |                           | fdo.csr.simplereenroll-req    |
+|                       |                           | fdo.csr.serverkeygen-req      | 
+|                       |                           | fdo.csr.csrattrs-req          | 
+| 3                     | Feature not supported.    | fdo.csr.csrattrs-req          |
+|                       |                           | fdo.csr.serverkeygen-req      |
+| 4                     | Rate exceeded. Try later. | fdo.csr.simpleenroll-req      |
+|                       |                           | fdo.csr.simplereenroll-req    |
+|                       |                           | fdo.csr.serverkeygen-req      | 
+| 5                     | Unsupported format.       | fdo.csr.cacerts-req           |
+
+An error of type 'unauthorized' is used when the request by the client cannot be processed by the Device Management Service, Certification Authority (CA) or Registration Authority (RA) due to insufficient permissions. The error of type 'bad request' is used when the request is malformed and parsing failed. 
 
 ## Example
 
