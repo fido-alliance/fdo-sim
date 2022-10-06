@@ -106,14 +106,14 @@ The following table describes an example exchange for the csr fsim:
 
 This specification re-using standardized encodings for certificates, certificate signing requests, private keys and CSR attributes. This table summarizes them. For convenience, the format registered as a media type is used. 
 
-| Media Type                                    | Reference      | Notes |
-|:----------------------------------------------|:---------------|:------|
-| application/pkcs7-mime; smime-type=certs-only | RFC 5751       | 1     | 
-| application/csrattrs                          | RFC 7030       |       |
-| application/pkcs10                            | RFC 5967       |       | 
-| application/pkix-cert                         | RFC 2585       | 2     | 
-| application/pkcs7-mime; smime-type=server-generated-key                        | RFC 5751, RFC 7030      | 1      |
-| multipart/mixed                               | RFC 2046       |       | 
+| Media Type                                               | Reference          | Notes |
+|:---------------------------------------------------------|:-------------------|:------|
+| application/pkcs7-mime; smime-type=certs-only            | RFC 5751           | 1     | 
+| application/csrattrs                                     | RFC 7030           |       |
+| application/pkcs10                                       | RFC 5967           |       | 
+| application/pkix-cert                                    | RFC 2585           | 2     | 
+| application/pkcs7-mime; smime-type=server-generated-key  | RFC 5751, RFC 7030 | 1     |
+| multipart/mixed                                          | RFC 2046           |       | 
 
 Notes: 
 
