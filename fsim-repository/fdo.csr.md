@@ -112,8 +112,7 @@ This specification re-using standardized encodings for certificates, certificate
 | application/csrattrs                          | RFC 7030       |       |
 | application/pkcs10                            | RFC 5967       |       | 
 | application/pkix-cert                         | RFC 2585       | 2     | 
-| application/pkcs7-mime;                       | RFC 5751,      |       |
-|    smime-type=server-generated-key            |   RFC 7030     | 1     |
+| application/pkcs7-mime; smime-type=server-generated-key                        | RFC 5751, RFC 7030      | 1      |
 | multipart/mixed                               | RFC 2046       |       | 
 
 Notes: 
