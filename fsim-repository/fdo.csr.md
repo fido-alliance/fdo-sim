@@ -2,7 +2,7 @@ This specification defines the 'CSR' (certificate signing request) FDO servicein
 
 ## fdo.csr FSIM Definition
 
-The CSR module provides the functionality to issue a certificate signing request from the FDO Device to a Certification Authority (CA) or a Registration Authority (RA) via the Device Management Service. It supports a subset of the functionality defined in RFC 7030, i.e. the full Certificate Management over CMS (CMC) functionality is not supported. The benefit of re-using RFC 7030 is the ability to integrate with existing certificate enrollment infrastructure.
+The CSR module provides the functionality to issue a certificate signing request from the FDO Device to a Certification Authority (CA) or a Registration Authority (RA) via the Device Management Service. It supports a subset of the functionality defined in RFC 7030 [RFC7030], i.e. the full Certificate Management over CMS (CMC) functionality is not supported. The benefit of re-using RFC 7030 is the ability to integrate with existing certificate enrollment infrastructure.
 
 The CSR FSIM supports the following functionality:
 - Distribution of CA certificates
@@ -103,3 +103,10 @@ The following table describes an example exchange for the csr fsim:
 | `[fdo.csr.active, False]`  | - | Device instructs owner to deactivate the csr fsim  |
 
 
+## References
+
+[RFC5272]  Schaad, J. and M. Myers, "Certificate Management over CMS (CMC)", RFC 5272, DOI 10.17487/RFC5272, June 2008, <https://www.rfc-editor.org/info/rfc5272>.
+
+[RFC7030]  Pritikin, M., Ed., Yee, P., Ed., and D. Harkins, Ed., "Enrollment over Secure Transport", RFC 7030, DOI 10.17487/RFC7030, October 2013, <https://www.rfc-editor.org/info/rfc7030>.
+
+[RFC2986]  Nystrom, M. and B. Kaliski, "PKCS #10: Certification Request Syntax Specification Version 1.7", RFC 2986, DOI 10.17487/RFC2986, November 2000, <https://www.rfc-editor.org/info/rfc2986>.
