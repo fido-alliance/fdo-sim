@@ -91,15 +91,15 @@ An error of type 'unauthorized' is used when the request by the client cannot be
 
 ## Example
 
-The following table describes an example exchange for the csr fsim:
+The following table describes an example exchange for the CSR FSIM:
 
 | Device sends  | Owner sends | Meaning   |
 |:----------------------|:----------------------------------|:------------------------|
-| `[fdo.csr.active, True]`  | - | Device instructs owner to activate the csr fsim  |
+| `[fdo.csr.active, True]`  | - | Device instructs owner to activate the CSR FSIM |
 | `[fdo.csr.cacerts-req, 281]` | - | Request for CA certs |
 | - | `[fdo.csr.cacerts-res, (tstr)abc...]` | CA cert response |
 | `[fdo.csr.simpleenroll-req, (tstr)cde...]` | -  | Certificate enrollment request |
 | - | `[fdo.csr.simpleenroll-res, (tstr)efa...]` | Certificate |
-| `[fdo.csr.active, False]`  | - | Device instructs owner to deactivate the csr fsim  |
+| `[fdo.csr.active, False]`  | - | Device instructs owner to deactivate the CSR FSIM |
 
 
