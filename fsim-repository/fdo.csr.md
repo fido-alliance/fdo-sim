@@ -47,7 +47,7 @@ A successful response is carried in a fdo.csr.simpleenroll-res message, which ca
 
 ## fdo.csr.simplereenroll-req and fdo.csr.simplereenroll-res
 
-A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (i.e., a PKCS #10 Certification Request [RFC2986]), to request a certificate. The payload in the fdo.csr.simplereenroll-req message is encoded as a 'application/pkcs10' payload. The Certificate Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
+A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1) i.e., a PKCS #10 Certification Request [RFC2986], to request a certificate. The payload in the fdo.csr.simplereenroll-req message is encoded as a 'application/pkcs10' payload. The Certificate Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
 
 A successful response is carried in a fdo.csr.simplereenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
 
@@ -58,7 +58,7 @@ The request uses the same format as the fdo.csr.simpleenroll-req and the fdo.csr
 
 The owning Device Management Service and the certificate enrollment servers SHOULD treat the CSR as it would any enroll or re-enroll CSR. The only distinction is that the public key values and signature in the CSR MUST be ignored. These are included in the request only to allow re-use of existing libraries for generating and parsing such requests.
    
-A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart-core MIME payload containing a PKCS#7-encoded certificate plus a PKCS#8-encoded unencrypted private key.
+A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart/mixed MIME payload containing a PKCS#7-encoded certificate plus a PKCS#8-encoded unencrypted private key [RFC2046]. The "application/pkcs8" part consists of the base64-encoded DER-encoded PrivateKeyInfo with a Content-Transfer-Encoding of "base64" [RFC2045].
 
 ## fdo.csr.csrattrs-req and fdo.csr.csrattrs-res
 
@@ -102,4 +102,23 @@ The following table describes an example exchange for the csr fsim:
 | - | `[fdo.csr.simpleenroll-res, (tstr)efa...]` | Certificate |
 | `[fdo.csr.active, False]`  | - | Device instructs owner to deactivate the csr fsim  |
 
+## Payload Encoding Summary
+
+This specification re-using standardized encodings for certificates, certificate signing requests, private keys and CSR attributes. This table summarizes them. For convenience, the format registered as a media type is used. 
+
+| Media Type                                    | Reference      | Notes |
+|:----------------------------------------------|:---------------|:------|
+| application/pkcs7-mime; smime-type=certs-only | RFC 5751       | 1     | 
+| application/csrattrs                          | RFC 7030       |       |
+| application/pkcs10                            | RFC 5967       |       | 
+| application/pkix-cert                         | RFC 2585       | 2     | 
+| application/pkcs7-mime;                       | RFC 5751,      |       |
+|    smime-type=server-generated-key            |   RFC 7030     | 1     |
+| multipart/mixed                               | RFC 2046       |       | 
+
+Notes: 
+
+1) application/pkcs7-mime media type is used to carry CMS content types, including EnvelopedData, SignedData, and CompressedData. To indicate what type of CMS data is contained, the smime-type parameter provides further help. "certs-only" refers to the CMS type SignedData and is used as a certificate management message to convey certificates and/or CRLs. The SignedData structure does not, in the degenerate case, contain signature information (see Section 2.4.2 of RFC 8551). "server-generated-key" is the parametervalue for Server-side Key Generation Response.
+
+3) application/pkix-cert contains exactly one certificate encoded in DER format.
 
