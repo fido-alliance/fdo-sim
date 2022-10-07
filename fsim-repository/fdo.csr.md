@@ -112,17 +112,19 @@ smime-type parameter of "server-generated-key" and a Content-Transfer-Encoding o
 
 An example of a successful response to a fdo.csr.serverkeygen-req might look like:
 
-   --fdo
-   Content-Type: application/pkcs8
-   Content-Transfer-Encoding: base64
+```
+--fdo
+Content-Type: application/pkcs8
+Content-Transfer-Encoding: base64
 
-   MIIEvgIB...//Base64-encoded private key//..ATp4HiBmgQ
-   --fdo
-   Content-Type: application/pkcs7-mime; smime-type=certs-only
-   Content-Transfer-Encoding: base64
+MIIEvgIB...//Base64-encoded private key//..ATp4HiBmgQ
+--fdo
+Content-Type: application/pkcs7-mime; smime-type=certs-only
+Content-Transfer-Encoding: base64
 
-   MIIDRQYJK..//Base64-encoded certificate//..dDoQAxAA==
-   --fdo--
+MIIDRQYJK..//Base64-encoded certificate//..dDoQAxAA==
+--fdo--
+```
 
 ## fdo.csr.csrattrs-req and fdo.csr.csrattrs-res
 
