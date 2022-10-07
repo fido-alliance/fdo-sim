@@ -2,7 +2,7 @@ This specification defines the 'CSR' (certificate signing request) FDO servicein
 
 ## fdo.csr FSIM Definition
 
-The CSR module provides the functionality to issue a certificate signing request from the FDO Device to a Certification Authority (CA) or a Registration Authority (RA) via the Device Management Service. It supports a subset of the functionality defined in RFC 7030, i.e. the full Certificate Management over CMS (CMC) functionality is not supported. The benefit of re-using RFC 7030 is the ability to integrate with existing certificate enrollment infrastructure.
+The CSR module provides the functionality to issue a certificate signing request from the FDO Device to a Certification Authority (CA) or a Registration Authority (RA) via the owning Device Management Service. It supports a subset of the functionality defined in RFC 7030, i.e. the full Certificate Management over CMS (CMC) functionality is not supported. The benefit of re-using RFC 7030 is the ability to integrate with existing certificate enrollment infrastructure. Such integration may, for example, utilize the owning Device Management Service to relay communication between a CA back and the device. The communication from the owning Device Management Service to the CA may happen via the Enrollment over Secure Transport protocol (EST). Since this specification re-uses the standardized payloads, those can be re-used for the communication between the owning Device Management Service and the device.
 
 The CSR FSIM supports the following functionality:
 - Distribution of CA certificates
@@ -54,11 +54,75 @@ A successful response is carried in a fdo.csr.simplereenroll-res message, which 
 ## fdo.csr.serverkeygen-req and fdo.csr.serverkeygen-res
 
 A device requests server-side key generation by issuing a fdo.csr.serverkeygen-req to the owning Device Management Service. 
-The request uses the same format as the fdo.csr.simpleenroll-req and the fdo.csr.simplereenroll-req messages.
+The request uses the same format as the fdo.csr.simpleenroll-req and the fdo.csr.simplereenroll-req messages. The owning Device
+Management Service and the certificate enrollment servers SHOULD treat the CSR as it would any enroll or re-enroll CSR, as 
+described in RFC 7030. The only distinction is that the public key values and signature in the CSR MUST be ignored. These are
+included in the request only to allow re-use of existing libraries for generating and parsing such requests.
 
-The owning Device Management Service and the certificate enrollment servers SHOULD treat the CSR as it would any enroll or re-enroll CSR. The only distinction is that the public key values and signature in the CSR MUST be ignored. These are included in the request only to allow re-use of existing libraries for generating and parsing such requests.
-   
-A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart-core MIME payload containing a PKCS#7-encoded certificate plus a PKCS#8-encoded unencrypted private key.
+If the device wants to receive an private key encrypted at the object layer in addition to that of the communication security
+offered by FDO, then the client MUST include an attribute in the CSR indicating the encryption key to be used. Section 4.4.1.1 
+and Section 4.4.1.2 of [RFC 7030] describe how to request symmetric and asymmetric key encryption of the private key. 
+
+A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart/mixed MIME payload with boundary
+set to "fdo" containing two parts: one part is the private key and the other part is the certificate.  
+
+The certificate is an "application/pkcs7-mime" and exactly matches the certificate response to simpleenroll response message.
+
+The format in which the private key part is returned is dependent on whether the private key is being returned with
+additional encryption on top of that provided by FDO.
+
+If additional encryption is not being employed, the private key data MUST be placed in an "application/pkcs8". 
+An "application/pkcs8" part consists of the base64-encoded DER-encoded PrivateKeyInfo with a 
+Content-Transfer-Encoding of "base64" [RFC2045].
+
+If additional encryption is being employed, the private key is placed inside of a CMS SignedData. The text below describes
+the possible variants and is an adaption of the description in Section 4.4.2 of [RFC7030]. The normative text herein 
+intentionally aligns with RFC 7030 for code-reuse purposes.
+
+The SignedData is signed by the party that generated the private key, which may or may not be the owning Device Management 
+Service or the CA. The SignedData is further protected by placing it inside of a CMS EnvelopedData, as described in Section 4 of
+[RFC5958]. The following list shows how the EncryptedData is used, depending on the type of protection key specified by the client.
+
+- If the client specified a symmetric encryption key to protect the server-generated private key, the EnvelopedData content is 
+encrypted using the secret key identified in the request.  The EnvelopedData RecipientInfo field MUST indicate the key-encryption
+kekri key management technique.  The values are as follows: version is set to 4, key-encryption key identifier (kekid) is set
+to the value of the DecryptKeyIdentifier from Section 4.4.1.1 of [RFC 7030]; keyEncryptionAlgorithm is set to one of the key wrap
+algorithms that the client included in the SMIMECapabilities accompanying the request; and encryptedKey is the encrypted key.
+
+- If the client specified an asymmetric encryption key suitable for key transport operations to protect the server-generated private
+key, the EnvelopedData content is encrypted using a randomly generated symmetric encryption key.  The cryptographic strength of
+the symmetric encryption key SHOULD be equivalent to the client-specified asymmetric key.  The EnvelopedData RecipientInfo field
+MUST indicate the KeyTransRecipientInfo (ktri) key management technique.  In KeyTransRecipientInfo, the RecipientIdentifier
+(rid) is either the subjectKeyIdentifier copied from the attribute defined in Section 4.4.1.2 of [RFC 7030] or the server determines
+an associated issuerAndSerialNumber from the attribute; version is derived from the choice of rid [RFC5652], keyEncryptionAlgorithm 
+is set to one of the key wrap algorithms that the client included in the SMIMECapabilities accompanying the request, and encryptedKey
+is the encrypted key.
+
+- If the client specified an asymmetric encryption key suitable for key agreement operations to protect the server-generated private
+key, the EnvelopedData content is encrypted using a randomly generated symmetric encryption key.  The cryptographic strength of
+the symmetric encryption key SHOULD be equivalent to the client-specified asymmetric key.  The EnvelopedData RecipientInfo field
+MUST indicate the KeyAgreeRecipientInfo (kari) key management technique.  In the KeyAgreeRecipientInfo type, version,
+originator, and user keying material (ukm) are as in [RFC5652], and keyEncryptionAlgorithm is set to one of the key wrap
+algorithms that the client included in the SMIMECapabilities accompanying the request.  The recipient's key identifier is
+either copied from the attribute defined in Section 4.4.1.2 of [RFC 7030] to subjectKeyIdentifier or the server determines an
+IssuerAndSerialNumber that corresponds to the value provided in the attribute.
+
+In all three additional encryption cases, the EnvelopedData is returned in the response as an "application/pkcs7-mime" part with an
+smime-type parameter of "server-generated-key" and a Content-Transfer-Encoding of "base64".
+
+An example of a successful response to a fdo.csr.serverkeygen-req might look like:
+
+   --fdo
+   Content-Type: application/pkcs8
+   Content-Transfer-Encoding: base64
+
+   MIIEvgIB...//Base64-encoded private key//..ATp4HiBmgQ
+   --fdo
+   Content-Type: application/pkcs7-mime; smime-type=certs-only
+   Content-Transfer-Encoding: base64
+
+   MIIDRQYJK..//Base64-encoded certificate//..dDoQAxAA==
+   --fdo--
 
 ## fdo.csr.csrattrs-req and fdo.csr.csrattrs-res
 
