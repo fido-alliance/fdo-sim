@@ -60,9 +60,11 @@ Management Service and the certificate enrollment servers SHOULD treat the CSR a
 described in RFC 7030. The only distinction is that the public key values and signature in the CSR MUST be ignored. These are
 included in the request only to allow re-use of existing libraries for generating and parsing such requests.
 
-If the device wants to receive an private key encrypted at the object layer in addition to that of the communication security
-offered by FDO, then the client MUST include an attribute in the CSR indicating the encryption key to be used. Section 4.4.1.1 
-and Section 4.4.1.2 of [RFC 7030] describe how to request symmetric and asymmetric key encryption of the private key. 
+If the device wants to receive an private key encrypted end-to-end from the device to the CA/RA there are two technical options, namely
+* to use object layer security, and 
+* to use communication security from the device to the owning Device Management Service and between the owning Device Management Service and the CA/RA. 
+
+This specification utilizes the latter. A future version of the specification may introduce the object layer security solution.
 
 A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart/mixed MIME payload with boundary
 set to "fdo" containing two parts: one part is the private key and the other part is the certificate.  
@@ -72,44 +74,8 @@ The certificate is an "application/pkcs7-mime" and exactly matches the certifica
 The format in which the private key part is returned is dependent on whether the private key is being returned with
 additional encryption on top of that provided by FDO.
 
-If additional encryption is not being employed, the private key data MUST be placed in an "application/pkcs8". 
-An "application/pkcs8" part consists of the base64-encoded DER-encoded PrivateKeyInfo with a 
-Content-Transfer-Encoding of "base64" [RFC2045].
-
-If additional encryption is being employed, the private key is placed inside of a CMS SignedData. The text below describes
-the possible variants and is an adaption of the description in Section 4.4.2 of [RFC7030]. The normative text herein 
-intentionally aligns with RFC 7030 for code-reuse purposes.
-
-The SignedData is signed by the party that generated the private key, which may or may not be the owning Device Management 
-Service or the CA. The SignedData is further protected by placing it inside of a CMS EnvelopedData, as described in Section 4 of
-[RFC5958]. The following list shows how the EncryptedData is used, depending on the type of protection key specified by the client.
-
-- If the client specified a symmetric encryption key to protect the server-generated private key, the EnvelopedData content is 
-encrypted using the secret key identified in the request.  The EnvelopedData RecipientInfo field MUST indicate the key-encryption
-kekri key management technique.  The values are as follows: version is set to 4, key-encryption key identifier (kekid) is set
-to the value of the DecryptKeyIdentifier from Section 4.4.1.1 of [RFC 7030]; keyEncryptionAlgorithm is set to one of the key wrap
-algorithms that the client included in the SMIMECapabilities accompanying the request; and encryptedKey is the encrypted key.
-
-- If the client specified an asymmetric encryption key suitable for key transport operations to protect the server-generated private
-key, the EnvelopedData content is encrypted using a randomly generated symmetric encryption key.  The cryptographic strength of
-the symmetric encryption key SHOULD be equivalent to the client-specified asymmetric key.  The EnvelopedData RecipientInfo field
-MUST indicate the KeyTransRecipientInfo (ktri) key management technique.  In KeyTransRecipientInfo, the RecipientIdentifier
-(rid) is either the subjectKeyIdentifier copied from the attribute defined in Section 4.4.1.2 of [RFC 7030] or the server determines
-an associated issuerAndSerialNumber from the attribute; version is derived from the choice of rid [RFC5652], keyEncryptionAlgorithm 
-is set to one of the key wrap algorithms that the client included in the SMIMECapabilities accompanying the request, and encryptedKey
-is the encrypted key.
-
-- If the client specified an asymmetric encryption key suitable for key agreement operations to protect the server-generated private
-key, the EnvelopedData content is encrypted using a randomly generated symmetric encryption key.  The cryptographic strength of
-the symmetric encryption key SHOULD be equivalent to the client-specified asymmetric key.  The EnvelopedData RecipientInfo field
-MUST indicate the KeyAgreeRecipientInfo (kari) key management technique.  In the KeyAgreeRecipientInfo type, version,
-originator, and user keying material (ukm) are as in [RFC5652], and keyEncryptionAlgorithm is set to one of the key wrap
-algorithms that the client included in the SMIMECapabilities accompanying the request.  The recipient's key identifier is
-either copied from the attribute defined in Section 4.4.1.2 of [RFC 7030] to subjectKeyIdentifier or the server determines an
-IssuerAndSerialNumber that corresponds to the value provided in the attribute.
-
-In all three additional encryption cases, the EnvelopedData is returned in the response as an "application/pkcs7-mime" part with an
-smime-type parameter of "server-generated-key" and a Content-Transfer-Encoding of "base64".
+Since this specification does not use the object encryption, the private key data MUST be placed in an "application/pkcs8". 
+An "application/pkcs8" part consists of the base64-encoded DER-encoded PrivateKeyInfo with a Content-Transfer-Encoding of "base64" [RFC2045].
 
 An example of a successful response to a fdo.csr.serverkeygen-req might look like:
 
@@ -173,14 +139,14 @@ The following table describes an example exchange for the CSR FSIM:
 
 This specification re-using standardized encodings for certificates, certificate signing requests, private keys and CSR attributes. This table summarizes them. For convenience, the format registered as a media type is used. 
 
-| Media Type                                               | Reference          | Notes |
-|:---------------------------------------------------------|:-------------------|:------|
-| application/pkcs7-mime; smime-type=certs-only            | RFC 5751           | 1     | 
-| application/csrattrs                                     | RFC 7030           |       |
-| application/pkcs10                                       | RFC 5967           |       | 
-| application/pkix-cert                                    | RFC 2585           | 2     | 
-| application/pkcs7-mime; smime-type=server-generated-key  | RFC 5751, RFC 7030 | 1     |
-| multipart/mixed                                          | RFC 2046           |       | 
+| Media Type                                               | Reference           | Notes |
+|:---------------------------------------------------------|:--------------------|:------|
+| application/pkcs7-mime; smime-type=certs-only            | [RFC5751]           | 1     | 
+| application/csrattrs                                     | [RFC7030]           |       |
+| application/pkcs10                                       | [RFC5967]           |       | 
+| application/pkix-cert                                    | [RFC2585]           | 2     | 
+| application/pkcs7-mime; smime-type=server-generated-key  | [RFC5751],[RFC7030] | 1     |
+| multipart/mixed                                          | [RFC2046]           |       | 
 
 Notes: 
 
@@ -189,8 +155,6 @@ Notes:
 3) application/pkix-cert contains exactly one certificate encoded in DER format.
 
 ## References
-
-[RFC5272]  Schaad, J. and M. Myers, "Certificate Management over CMS (CMC)", RFC 5272, DOI 10.17487/RFC5272, June 2008, <https://www.rfc-editor.org/info/rfc5272>.
 
 [RFC7030]  Pritikin, M., Ed., Yee, P., Ed., and D. Harkins, Ed., "Enrollment over Secure Transport", RFC 7030, DOI 10.17487/RFC7030, October 2013, <https://www.rfc-editor.org/info/rfc7030>.
 
@@ -202,13 +166,7 @@ Notes:
 [RFC2045]  Freed, N. and N. Borenstein, "Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies", RFC 2045, DOI 10.17487/RFC2045, November 1996, <https://www.rfc-editor.org/info/rfc2045>.
 
 [RFC5751]  Ramsdell, B. and S. Turner, "Secure/Multipurpose Internet Mail Extensions (S/MIME) Version 3.2 Message Specification", RFC 5751, DOI 10.17487/RFC5751, January 2010, <https://www.rfc-editor.org/info/rfc5751>.
-
-[RFC8551]  Schaad, J., Ramsdell, B., and S. Turner, "Secure/Multipurpose Internet Mail Extensions (S/MIME) Version 4.0 Message Specification", RFC 8551, DOI 10.17487/RFC8551, April 2019, <https://www.rfc-editor.org/info/rfc8551>.
-			  
+	  
 [RFC5967]  Turner, S., "The application/pkcs10 Media Type", RFC 5967, DOI 10.17487/RFC5967, August 2010, <https://www.rfc-editor.org/info/rfc5967>.
 			  
 [RFC2585]  Housley, R. and P. Hoffman, "Internet X.509 Public Key Infrastructure Operational Protocols: FTP and HTTP", RFC 2585, DOI 10.17487/RFC2585, May 1999, <https://www.rfc-editor.org/info/rfc2585>.
-			  
-[RFC5958] Turner, S., "Asymmetric Key Packages", RFC 5958, DOI 10.17487/RFC5958, August 2010, <https://www.rfc-editor.org/info/rfc5958>.
-
-[RFC5652] Housley, R., "Cryptographic Message Syntax (CMS)", STD 70, RFC 5652, DOI 10.17487/RFC5652, September 2009, <https://www.rfc-editor.org/info/rfc5652>.
