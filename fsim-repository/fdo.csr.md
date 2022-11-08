@@ -2,7 +2,7 @@ This specification defines the 'CSR' (certificate signing request) FDO servicein
 
 ## fdo.csr FSIM Definition
 
-The CSR module provides the functionality to issue a certificate signing request from the FDO Device to a Certification Authority (CA) or a Registration Authority (RA) via the Device Management Service. It supports a subset of the functionality defined in RFC 7030 [RFC7030], i.e. the full Certificate Management over CMS (CMC) functionality is not supported. The benefit of re-using RFC 7030 is the ability to integrate with existing certificate enrollment infrastructure.
+The CSR module provides the functionality to issue a certificate signing request from the FDO Device to a Certification Authority (CA) or a Registration Authority (RA) via the owning Device Management Service. It supports a subset of the functionality defined in RFC 7030, for example the full Certificate Management over CMS (CMC) functionality is not supported. The benefit of re-using RFC 7030 is the ability to integrate with existing certificate enrollment infrastructure. Such integration may, for example, utilize the owning Device Management Service to relay communication between a CA back and the device. The communication from the owning Device Management Service to the CA may happen via the Enrollment over Secure Transport protocol (EST). Since this specification re-uses the standardized payloads, those can be re-used for the communication between the owning Device Management Service and the device.
 
 The CSR FSIM supports the following functionality:
 - Distribution of CA certificates
@@ -54,11 +54,44 @@ A successful response is carried in a fdo.csr.simplereenroll-res message, which 
 ## fdo.csr.serverkeygen-req and fdo.csr.serverkeygen-res
 
 A device requests server-side key generation by issuing a fdo.csr.serverkeygen-req to the owning Device Management Service. 
-The request uses the same format as the fdo.csr.simpleenroll-req and the fdo.csr.simplereenroll-req messages.
 
-The owning Device Management Service and the certificate enrollment servers SHOULD treat the CSR as it would any enroll or re-enroll CSR. The only distinction is that the public key values and signature in the CSR MUST be ignored. These are included in the request only to allow re-use of existing libraries for generating and parsing such requests.
-   
-A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart/mixed MIME payload containing a PKCS#7-encoded certificate plus a PKCS#8-encoded unencrypted private key [RFC2046]. The "application/pkcs8" part consists of the base64-encoded DER-encoded PrivateKeyInfo with a Content-Transfer-Encoding of "base64" [RFC2045].
+The request uses the same format as the fdo.csr.simpleenroll-req and the fdo.csr.simplereenroll-req messages. The owning Device
+Management Service and the certificate enrollment servers SHOULD treat the CSR as it would any enroll or re-enroll CSR, as 
+described in RFC 7030. The only distinction is that the public key values and signature in the CSR MUST be ignored. These are
+included in the request only to allow re-use of existing libraries for generating and parsing such requests.
+
+If the device wants to receive an private key encrypted end-to-end from the device to the CA/RA there are two technical options, namely
+* to use object layer security, and 
+* to use communication security from the device to the owning Device Management Service and between the owning Device Management Service and the CA/RA. 
+
+This specification utilizes the latter. A future version of this specification, or another FSIM, may introduce the object layer security solution.
+
+A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart/mixed MIME payload with boundary
+set to "fdo" containing two parts: one part is the private key and the other part is the certificate.  
+
+The certificate is an "application/pkcs7-mime" and exactly matches the certificate response to simpleenroll response message.
+
+The format in which the private key part is returned is dependent on whether the private key is being returned with
+additional encryption on top of that provided by FDO.
+
+Since this specification does not use the object encryption, the private key data MUST be placed in an "application/pkcs8". 
+An "application/pkcs8" part consists of the base64-encoded DER-encoded PrivateKeyInfo with a Content-Transfer-Encoding of "base64" [RFC2045].
+
+An example of a successful response to a fdo.csr.serverkeygen-req might look like:
+
+```
+--fdo
+Content-Type: application/pkcs8
+Content-Transfer-Encoding: base64
+
+MIIEvgIB...//Base64-encoded private key//..ATp4HiBmgQ
+--fdo
+Content-Type: application/pkcs7-mime; smime-type=certs-only
+Content-Transfer-Encoding: base64
+
+MIIDRQYJK..//Base64-encoded certificate//..dDoQAxAA==
+--fdo--
+```
 
 ## fdo.csr.csrattrs-req and fdo.csr.csrattrs-res
 
@@ -106,14 +139,14 @@ The following table describes an example exchange for the CSR FSIM:
 
 This specification re-using standardized encodings for certificates, certificate signing requests, private keys and CSR attributes. This table summarizes them. For convenience, the format registered as a media type is used. 
 
-| Media Type                                               | Reference          | Notes |
-|:---------------------------------------------------------|:-------------------|:------|
-| application/pkcs7-mime; smime-type=certs-only            | RFC 5751           | 1     | 
-| application/csrattrs                                     | RFC 7030           |       |
-| application/pkcs10                                       | RFC 5967           |       | 
-| application/pkix-cert                                    | RFC 2585           | 2     | 
-| application/pkcs7-mime; smime-type=server-generated-key  | RFC 5751, RFC 7030 | 1     |
-| multipart/mixed                                          | RFC 2046           |       | 
+| Media Type                                               | Reference           | Notes |
+|:---------------------------------------------------------|:--------------------|:------|
+| application/pkcs7-mime; smime-type=certs-only            | [RFC5751]           | 1     | 
+| application/csrattrs                                     | [RFC7030]           |       |
+| application/pkcs10                                       | [RFC5967]           |       | 
+| application/pkix-cert                                    | [RFC2585]           | 2     | 
+| application/pkcs7-mime; smime-type=server-generated-key  | [RFC5751],[RFC7030] | 1     |
+| multipart/mixed                                          | [RFC2046]           |       | 
 
 Notes: 
 
@@ -122,8 +155,6 @@ Notes:
 3) application/pkix-cert contains exactly one certificate encoded in DER format.
 
 ## References
-
-[RFC5272]  Schaad, J. and M. Myers, "Certificate Management over CMS (CMC)", RFC 5272, DOI 10.17487/RFC5272, June 2008, <https://www.rfc-editor.org/info/rfc5272>.
 
 [RFC7030]  Pritikin, M., Ed., Yee, P., Ed., and D. Harkins, Ed., "Enrollment over Secure Transport", RFC 7030, DOI 10.17487/RFC7030, October 2013, <https://www.rfc-editor.org/info/rfc7030>.
 
@@ -135,13 +166,7 @@ Notes:
 [RFC2045]  Freed, N. and N. Borenstein, "Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies", RFC 2045, DOI 10.17487/RFC2045, November 1996, <https://www.rfc-editor.org/info/rfc2045>.
 
 [RFC5751]  Ramsdell, B. and S. Turner, "Secure/Multipurpose Internet Mail Extensions (S/MIME) Version 3.2 Message Specification", RFC 5751, DOI 10.17487/RFC5751, January 2010, <https://www.rfc-editor.org/info/rfc5751>.
-
-[RFC8551]  Schaad, J., Ramsdell, B., and S. Turner, "Secure/Multipurpose Internet Mail Extensions (S/MIME) Version 4.0 Message Specification", RFC 8551, DOI 10.17487/RFC8551, April 2019, <https://www.rfc-editor.org/info/rfc8551>.
-			  
+	  
 [RFC5967]  Turner, S., "The application/pkcs10 Media Type", RFC 5967, DOI 10.17487/RFC5967, August 2010, <https://www.rfc-editor.org/info/rfc5967>.
 			  
 [RFC2585]  Housley, R. and P. Hoffman, "Internet X.509 Public Key Infrastructure Operational Protocols: FTP and HTTP", RFC 2585, DOI 10.17487/RFC2585, May 1999, <https://www.rfc-editor.org/info/rfc2585>.
-			  
-[RFC5958] Turner, S., "Asymmetric Key Packages", RFC 5958, DOI 10.17487/RFC5958, August 2010, <https://www.rfc-editor.org/info/rfc5958>.
-
-[RFC5652] Housley, R., "Cryptographic Message Syntax (CMS)", STD 70, RFC 5652, DOI 10.17487/RFC5652, September 2009, <https://www.rfc-editor.org/info/rfc5652>.
