@@ -38,6 +38,8 @@ A device requests CA certificates by issuing the fdo.csr.cacerts-req message. Th
 
 A successful response is conveyed in the fdo.csr.cacerts-res message. The format mandatory-to-implement is 'application/pkcs7-mime; smime-type=certs-only' with value 281. The optional format is 'application/pkix-cert' with value 287.
 
+The certificates returned by this request can be used to update trust anchors on the system, so that other CA-based operations (such as TLS connections) can use the updated trust anchors.  This includes, for example, the WGET FSIM.
+
 ## fdo.csr.simpleenroll-req and fdo.csr.simpleenroll-res
 
 A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (i.e., a PKCS #10 Certification Request [RFC2986]). The payload in the fdo.csr.simpleenroll-req message is encoded as a 'application/pkcs10' payload. 
