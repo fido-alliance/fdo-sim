@@ -64,7 +64,7 @@ If the device wants to receive an private key encrypted end-to-end from the devi
 * to use object layer security, and 
 * to use communication security from the device to the owning Device Management Service and between the owning Device Management Service and the CA/RA. 
 
-This specification utilizes the latter. A future version of the specification may introduce the object layer security solution.
+This specification utilizes the latter. A future version of this specification, or another FSIM, may introduce the object layer security solution.
 
 A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart/mixed MIME payload with boundary
 set to "fdo" containing two parts: one part is the private key and the other part is the certificate.  
