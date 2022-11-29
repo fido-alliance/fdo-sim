@@ -17,9 +17,6 @@ Relative pathnames are permitted.  This may be useful for downloading short file
 
 It may be assumed that relative pathnames always end up in the same place for a given device.  So it is possible to download a file and expect it to be in the same default directory as the command modules uses.  
 
-**Geof: discussion of current directory should be in the command module**
-**Geof: to download to specific path: either know the path or run a command to get the path.**
-
 The following table describes key-value pairs for the download fsim.
 
 
@@ -32,10 +29,18 @@ The following table describes key-value pairs for the download fsim.
 | o --> d   | `fdo.download.data` | `bstr` | Writes a block of data up to 1014 bytes in size to the end of file  | 
 | d --> o   | `fdo.download.done` | `int` | Indicates that the download has completed, returns the length of the target file.  Value of -1 indicates the sha-384 check failed, or other file write error |
 
-* Geof: what happens to relative pathnames?   Relative to the client.  Assume this is a workspace area, should be cleared before the protocol.
-* Geof: is there a concept of currnet directory?
-* Geof: what about a device for Windows?  that's why you want to use relative pathnames
-* Geof: Adding length prefix and streaming modes.
+The intended order of these commands is as follows:
+
+* Active message is used only once per FDO session to activate the module (as for all FSIM's)
+* .name
+* .length
+* .sha-384 if desired
+* .download as many times as needed
+* .done is the response
+
+For relative pathnames, see the `fdo.command` module, which explains how the default directory is chosen.  
+
+If a given pathname resolves to a device, behavior is device specific.  A drive letter on Windows is a part of the pathname, and may be used.  It might be necessary to use the `fdo.command` module to determine the correct drive letter to use.
 
 The following table describes the expected message flow for the download fsim:
 
