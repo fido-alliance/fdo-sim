@@ -1,5 +1,7 @@
 This specification defines the 'CSR' (certificate signing request) FDO serviceinfo module (FSIM) for the purpose of certificate enrollment. An FSIM is a set of key-value pairs; they define the onboarding operations that can be performed on a given FDO device. FSIM key-value pairs are exchanged between the device and it's owning Device Management Service. It is up to the owning Device Management Service and the device to interpret the key-value pairs in accordance with the FSIM specification.
 
+This specification supports a number of features related to certificate enrollment, including client- and server-side key generation. To support constrained IoT devices not all features are mandatory to implement by an FDO Device.
+
 ## fdo.csr FSIM Definition
 
 The CSR module provides the functionality to issue a certificate signing request from the FDO Device to a Certification Authority (CA) or a Registration Authority (RA) via the owning Device Management Service. It supports a subset of the functionality defined in RFC 7030, for example the full Certificate Management over CMS (CMC) functionality is not supported. The benefit of re-using RFC 7030 is the ability to integrate with existing certificate enrollment infrastructure. Such integration may, for example, utilize the owning Device Management Service to relay communication between a CA back and the device. The communication from the owning Device Management Service to the CA may happen via the Enrollment over Secure Transport protocol (EST). Since this specification re-uses the standardized payloads, those can be re-used for the communication between the owning Device Management Service and the device.
@@ -42,14 +44,26 @@ The certificates returned by this request can be used to update trust anchors on
 
 ## fdo.csr.simpleenroll-req and fdo.csr.simpleenroll-res
 
-A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (i.e., a PKCS #10 Certification Request [RFC2986]). The payload in the fdo.csr.simpleenroll-req message is encoded as a 'application/pkcs10' payload. 
+A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (i.e., a PKCS #10 Certification Request [RFC2986]), to request a certificate. The payload in the fdo.csr.simpleenroll-req message is encoded as a 'application/pkcs10' payload. 
 The Certification Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
 
 A successful response is carried in a fdo.csr.simpleenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
 
 ## fdo.csr.simplereenroll-req and fdo.csr.simplereenroll-res
 
-A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1) i.e., a PKCS #10 Certification Request [RFC2986], to request a certificate. The payload in the fdo.csr.simplereenroll-req message is encoded as a 'application/pkcs10' payload. The Certificate Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
+A device can renew/rekey an existing certificate by submitting a re-enrollment request.
+   
+A certificate signing request employs the same format as the "simpleenroll" request (see previous section).  The request Subject field
+and SubjectAltName extension MUST be identical to the corresponding fields in the certificate being renewed/rekeyed.  The
+ChangeSubjectName attribute, as defined in [RFC6402], MAY be included in the CSR to request that these fields be changed in the new
+certificate.
+
+If the Subject Public Key Info in the certification signing request is the same as the current certificate, then the certificate 
+will be renewed.  If the public key information in the certification signing request is different than the current certificate, 
+then the server rekeys the certificate.
+
+The payload in the fdo.csr.simplereenroll-req message is encoded as a 'application/pkcs10' payload. 
+The Certificate Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
 
 A successful response is carried in a fdo.csr.simplereenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
 
@@ -124,6 +138,8 @@ The following table lists error codes returned by the fdo.csr.error message.
 
 An error of type 'unauthorized' is used when the request by the client cannot be processed by the Device Management Service, Certification Authority (CA) or Registration Authority (RA) due to insufficient permissions. The error of type 'bad request' is used when the request is malformed and parsing failed. 
 
+The "Feature not supported" error code allows the FDO device to indicate that it does not support optional features defined in this specification. This enables more constrained IoT devices to implement a subset of the features in this specification without causing interoperability problems. When the invocation of a command returns a "Feature not supported" error, then the caller needs to rely on the mandatory features. This fallback might be done based on the documentation of the target device, or could be implemented as a programmable backoff and retry procedure.
+
 ## Example
 
 The following table describes an example exchange for the CSR FSIM:
@@ -172,3 +188,5 @@ Notes:
 [RFC5967]  Turner, S., "The application/pkcs10 Media Type", RFC 5967, DOI 10.17487/RFC5967, August 2010, <https://www.rfc-editor.org/info/rfc5967>.
 			  
 [RFC2585]  Housley, R. and P. Hoffman, "Internet X.509 Public Key Infrastructure Operational Protocols: FTP and HTTP", RFC 2585, DOI 10.17487/RFC2585, May 1999, <https://www.rfc-editor.org/info/rfc2585>.
+
+[RFC6402] J. Schaad, "Certificate Management over CMS (CMC) Updates", RFC 6402, DOI 10.17487/RFC6402,  November 2011, <https://www.rfc-editor.org/info/rfc6402>.
