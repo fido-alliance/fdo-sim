@@ -1,17 +1,15 @@
 # FDO ServiceInfo Modules (FSIM)
-This repo will contain a registry and repository for FDO ServiceInfo Modules.
+This repo is a repository of FDO ServiceInfo Modules as defined in [FIDO Device Onboard v1.1](https://fidoalliance.org/specs/FDO/FIDO-Device-Onboard-PS-v1.1-20220419/FIDO-Device-Onboard-PS-v1.1-20220419.html).
 
+[License](LICENSE.md)
 
+[Disclaimer](DISCLAIMER.md)
 
-Link to registry
+Contribution Agreement
 
-Link to repository
+[FDO ServiceInfo Modules repository](https://github.com/fido-alliance/fdo-sim/tree/main/fsim-repository)
 
-Contribution agreement
+[ServiceInfo definition](https://fidoalliance.org/specs/FDO/FIDO-Device-Onboard-PS-v1.1-20220419/FIDO-Device-Onboard-PS-v1.1-20220419.html#to2deviceserviceinfo-type-68)
 
-Link to FSIM spec
-
-Link to FSIM Samples
-
-Naming conventions
+Naming conventions (TBD)
 
