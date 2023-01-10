@@ -13,7 +13,7 @@ The CSR FSIM supports the following functionality:
 - Server-side key generation
 - CSR attributes
 
-While the first three features are mandatory-to-implement in this FSIM, the latter two (server-side key generation and CSR attributes) are optional.
+While the first three features are mandatory-to-implement in this FSIM, the latter two (server-side key generation and CSR attributes) are optional. This separation into mandatory and optional features aligns with the EST-coaps specification [RFC9148].
 
 FSIM's communicate over a reliable channel that experiences communication security with confidentiality, integrity and replay protection. Certificate enrollment messages benefit from the security protection offered by the underlying channel but may require additional protection, depending on the use case. 
 
@@ -189,4 +189,7 @@ Notes:
 			  
 [RFC2585]  Housley, R. and P. Hoffman, "Internet X.509 Public Key Infrastructure Operational Protocols: FTP and HTTP", RFC 2585, DOI 10.17487/RFC2585, May 1999, <https://www.rfc-editor.org/info/rfc2585>.
 
-[RFC6402] J. Schaad, "Certificate Management over CMS (CMC) Updates", RFC 6402, DOI 10.17487/RFC6402,  November 2011, <https://www.rfc-editor.org/info/rfc6402>.
+[RFC6402] J. Schaad, "Certificate Management over CMS (CMC) Updates", RFC 6402, DOI 10.17487/RFC6402, November 2011, <https://www.rfc-editor.org/info/rfc6402>.
+
+[RFC9148] van der Stok, P., Kampanakis, P., Richardson, M., and S. Raza, "EST-coaps: Enrollment over Secure Transport with the Secure Constrained Application Protocol", RFC 9148, April 2022, <https://www.rfc-editor.org/info/rfc9148>.
+
