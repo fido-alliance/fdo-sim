@@ -13,7 +13,7 @@ The CSR FSIM supports the following functionality:
 - Server-side key generation
 - CSR attributes
 
-While the first three features are mandatory-to-implement in this FSIM, the latter two (server-side key generation and CSR attributes) are optional. This separation into mandatory and optional features aligns with the EST-coaps specification [RFC9148].
+A constrained device may not be able to afford to implement both client- and server-side key generation functionality. Hence, this specification allows to implement either of the two features. CSR attributes discovery is an optional feature.
 
 FSIM's communicate over a reliable channel that experiences communication security with confidentiality, integrity and replay protection. Certificate enrollment messages benefit from the security protection offered by the underlying channel but may require additional protection, depending on the use case. 
 
@@ -168,9 +168,9 @@ This specification re-using standardized encodings for certificates, certificate
 
 Notes: 
 
-1) application/pkcs7-mime media type is used to carry CMS content types, including EnvelopedData, SignedData, and CompressedData. To indicate what type of CMS data is contained, the smime-type parameter provides further help. "certs-only" refers to the CMS type SignedData and is used as a certificate management message to convey certificates and/or CRLs. The SignedData structure does not, in the degenerate case, contain signature information (see Section 2.4.2 of RFC 8551). "server-generated-key" is the parametervalue for Server-side Key Generation Response.
+1) application/pkcs7-mime media type is used to carry CMS content types, including EnvelopedData, SignedData, and CompressedData. To indicate what type of CMS data is contained, the smime-type parameter provides further help. "certs-only" refers to the CMS type SignedData and is used as a certificate management message to convey certificates and/or CRLs. The SignedData structure does not, in the degenerate case, contain signature information (see Section 2.4.2 of RFC 8551). "server-generated-key" is the parameter value for server-side key generation response.
 
-3) application/pkix-cert contains exactly one certificate encoded in DER format.
+2) application/pkix-cert contains exactly one certificate encoded in DER format.
 
 ## References
 
@@ -190,6 +190,4 @@ Notes:
 [RFC2585]  Housley, R. and P. Hoffman, "Internet X.509 Public Key Infrastructure Operational Protocols: FTP and HTTP", RFC 2585, DOI 10.17487/RFC2585, May 1999, <https://www.rfc-editor.org/info/rfc2585>.
 
 [RFC6402] J. Schaad, "Certificate Management over CMS (CMC) Updates", RFC 6402, DOI 10.17487/RFC6402, November 2011, <https://www.rfc-editor.org/info/rfc6402>.
-
-[RFC9148] van der Stok, P., Kampanakis, P., Richardson, M., and S. Raza, "EST-coaps: Enrollment over Secure Transport with the Secure Constrained Application Protocol", RFC 9148, DOI 10.17487/RFC9148, April 2022, <https://www.rfc-editor.org/info/rfc9148>.
 
