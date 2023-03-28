@@ -38,29 +38,29 @@ This module is particularly useful for transfering bulk data that either:
 * is not secret
 * is pre-encrypted with long-lived certificates to verify them, such as Linux software update modules
 
-The URL format identifies a name and path for the file, from which an be derived the default name for the downloaded file.  By default, this name is the last part of the URL's path (aka **pathinfo**).  For example: http://myhost.net/dir1/dir2/name.txt the default file name is "name.txt", relative to the current directory on the FDO Device.  An alternate path name may be specified using the `wget:name` message.
+The URL format identifies a name and path for the file, from which an be derived the default name for the downloaded file.  By default, this name is the last part of the URL's path (aka **pathinfo**).  For example: http://myhost.net/dir1/dir2/name.txt the default file name is "name.txt", relative to the current directory on the FDO Device.  An alternate path name may be specified using the `fdo.wget:name` message.
 
 The following table describes key-value pairs for the wget fsim.
 
 
 | Direction | Key Name                      | Value                      | Meaning   |
 |:----------|:------------------------------|:---------------------------|:----------|
-| o <-> d   | `fdo.wget.active` | `bool` | Instructs the device to activate or deactivate the module  | 
-| o --> d   | `fdo.wget.sha-384` | `bytes[48]` | (Optional) Contains the sha-384 of the file that will be retrieved. |
-| o --> d   | `fdo.wget.name` | `tstr` | Optional message, which overrides the target filename where the file will be stored.  This may be also be used to target a downloaded file into an absolute pathname, rather than the current directory. |
-| o --> d   | `fdo.wget.url` | `tstr` | Indicates the URL to be retrieved   |
-| d --> o   | `fdo.wget.error` | `tstr` | Indicates failure with error message |
-| d --> o   | `fdo.wget.done` | `int` | Indicates the length of the file successfully retrieved.  If the `sha-384` message has been received, the receiver computes the sha-384 of the file downloaded before it sends this message and sends an error message if the transfer failed. |
+| o <-> d   | `fdo.wget:active` | `bool` | Instructs the device to activate or deactivate the module  | 
+| o --> d   | `fdo.wget:sha-384` | `bytes[48]` | (Optional) Contains the sha-384 of the file that will be retrieved. |
+| o --> d   | `fdo.wget:name` | `tstr` | Optional message, which overrides the target filename where the file will be stored.  This may be also be used to target a downloaded file into an absolute pathname, rather than the current directory. |
+| o --> d   | `fdo.wget:url` | `tstr` | Indicates the URL to be retrieved   |
+| d --> o   | `fdo.wget:error` | `tstr` | Indicates failure with error message |
+| d --> o   | `fdo.wget:done` | `int` | Indicates the length of the file successfully retrieved.  If the `sha-384` message has been received, the receiver computes the sha-384 of the file downloaded before it sends this message and sends an error message if the transfer failed. |
 
 
 The following table describes the expected message flow for the wget fsim:
 
 | Device sends  | Owner sends | Meaning   |
 |:----------------------|:----------------------------------|:------------------------|
-| -  | `[fdo.wget.active, True]` | Owner instructs device to activate the wget fsim  | 
-| -  | `[fdo.upload.sha-384, (bstr)af3799... ]` |  (Optional) SHA-384 for the next file | 
-| - | `[fdo.upload.name, "foo"]` |  Store next file as "foo" | 
-| - | `[fdo.upload.wget, (tstr)"http://mysite/python3.deb" ]` |  Request to immediately transfer URL | 
-| `[fdo.wget.active, True]` | - | Device confirms the module is available | 
-| `[fdo.wget.done, 700]` |  - | Device instructs owner that 700 bytes were transferred | 
-| `[fdo.wget.sha-384, (bstr)af3799... ]` |  - | SHA-384 for the file (if requested above) |
+| -  | `[fdo.wget:active, True]` | Owner instructs device to activate the wget fsim  | 
+| -  | `[fdo.upload:sha-384, (bstr)af3799... ]` |  (Optional) SHA-384 for the next file | 
+| - | `[fdo.upload:name, "foo"]` |  Store next file as "foo" | 
+| - | `[fdo.upload:wget, (tstr)"http://mysite/python3.deb" ]` |  Request to immediately transfer URL | 
+| `[fdo.wget:active, True]` | - | Device confirms the module is available | 
+| `[fdo.wget:done, 700]` |  - | Device instructs owner that 700 bytes were transferred | 
+| `[fdo.wget:sha-384, (bstr)af3799... ]` |  - | SHA-384 for the file (if requested above) |

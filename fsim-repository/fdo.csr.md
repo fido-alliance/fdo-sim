@@ -37,35 +37,35 @@ The following table describes key-value pairs for the CSR FSIM.
 
 | Direction | Key Name                      | Value                      | Meaning   |
 |:----------|:------------------------------|:---------------------------|:----------|
-| o <-> d   | `fdo.csr.active` | `bool` | Instructs the device to activate or deactivate the module  | 
-| o <-- d   | `fdo.csr.cacerts-req` | `uint` | Request to obtain CA certificates |
-| o --> d   | `fdo.csr.cacerts-res` | `tstr` | CA certificates |
-| o <-- d   | `fdo.csr.simpleenroll-req` | `tstr` | Certificate enrollment request |
-| o --> d   | `fdo.csr.simpleenroll-res` | `tstr` | Enrollments of clients |
-| o <-- d   | `fdo.csr.simplereenroll-req` | `tstr` | Request to re-enroll a client |
-| o --> d   | `fdo.csr.simplereenroll-res` | `tstr` | Re-enrollment response |
-| o <-- d   | `fdo.csr.serverkeygen-req` | `tstr` | Request for server-side key generation |
-| o --> d   | `fdo.csr.serverkeygen-res` | `tstr` | Certificate and private key |
-| o <-- d   | `fdo.csr.csrattrs-req` | `uint` | Request for CSR attributes |
-| o --> d   | `fdo.csr.csrattrs-res` | `tstr`  | CSR attributes |
-| o --> d   | `fdo.csr.error` | `uint`  | Error Indication |
+| o <-> d   | `fdo.csr:active` | `bool` | Instructs the device to activate or deactivate the module  | 
+| o <-- d   | `fdo.csr:cacerts-req` | `uint` | Request to obtain CA certificates |
+| o --> d   | `fdo.csr:cacerts-res` | `tstr` | CA certificates |
+| o <-- d   | `fdo.csr:simpleenroll-req` | `tstr` | Certificate enrollment request |
+| o --> d   | `fdo.csr:simpleenroll-res` | `tstr` | Enrollments of clients |
+| o <-- d   | `fdo.csr:simplereenroll-req` | `tstr` | Request to re-enroll a client |
+| o --> d   | `fdo.csr:simplereenroll-res` | `tstr` | Re-enrollment response |
+| o <-- d   | `fdo.csr:serverkeygen-req` | `tstr` | Request for server-side key generation |
+| o --> d   | `fdo.csr:serverkeygen-res` | `tstr` | Certificate and private key |
+| o <-- d   | `fdo.csr:csrattrs-req` | `uint` | Request for CSR attributes |
+| o --> d   | `fdo.csr:csrattrs-res` | `tstr`  | CSR attributes |
+| o --> d   | `fdo.csr:error` | `uint`  | Error Indication |
 
-## fdo.csr.cacerts-req and fdo.csr.cacerts-res
+## fdo.csr:cacerts-req and fdo.csr:cacerts-res
 
-A device requests CA certificates by issuing the fdo.csr.cacerts-req message. The indicated value informs the owning Device Management Service in what format the CA certificates have to be returned. 
+A device requests CA certificates by issuing the fdo.csr:cacerts-req message. The indicated value informs the owning Device Management Service in what format the CA certificates have to be returned. 
 
-A successful response is conveyed in the fdo.csr.cacerts-res message. The format mandatory-to-implement is 'application/pkcs7-mime; smime-type=certs-only' with value 281. The optional format is 'application/pkix-cert' with value 287.
+A successful response is conveyed in the fdo.csr:cacerts-res message. The format mandatory-to-implement is 'application/pkcs7-mime; smime-type=certs-only' with value 281. The optional format is 'application/pkix-cert' with value 287.
 
 The certificates returned by this request can be used to update trust anchors on the system, so that other CA-based operations (such as TLS connections) can use the updated trust anchors.  This includes, for example, the WGET FSIM.
 
-## fdo.csr.simpleenroll-req and fdo.csr.simpleenroll-res
+## fdo.csr:simpleenroll-req and fdo.csr:simpleenroll-res
 
-A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (i.e., a PKCS #10 Certification Request [RFC2986]), to request a certificate. The payload in the fdo.csr.simpleenroll-req message is encoded as a 'application/pkcs10' payload. 
+A device uses a Simple PKI Request, as specified in CMC (RFC 5272, Section 3.1 (i.e., a PKCS #10 Certification Request [RFC2986]), to request a certificate. The payload in the fdo.csr:simpleenroll-req message is encoded as a 'application/pkcs10' payload. 
 The Certification Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
 
-A successful response is carried in a fdo.csr.simpleenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
+A successful response is carried in a fdo.csr:simpleenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
 
-## fdo.csr.simplereenroll-req and fdo.csr.simplereenroll-res
+## fdo.csr:simplereenroll-req and fdo.csr:simplereenroll-res
 
 A device can renew/rekey an existing certificate by submitting a re-enrollment request.
    
@@ -78,16 +78,16 @@ If the Subject Public Key Info in the certification signing request is the same 
 will be renewed.  If the public key information in the certification signing request is different than the current certificate, 
 then the server rekeys the certificate.
 
-The payload in the fdo.csr.simplereenroll-req message is encoded as a 'application/pkcs10' payload. 
+The payload in the fdo.csr:simplereenroll-req message is encoded as a 'application/pkcs10' payload. 
 The Certificate Signing Request (CSR) signature provides proof-of-possession of the client-possessed private key.
 
-A successful response is carried in a fdo.csr.simplereenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
+A successful response is carried in a fdo.csr:simplereenroll-res message, which carries the certificate encoded as 'application/pkix-cert'.
 
-## fdo.csr.serverkeygen-req and fdo.csr.serverkeygen-res
+## fdo.csr:serverkeygen-req and fdo.csr:serverkeygen-res
 
-A device requests server-side key generation by issuing a fdo.csr.serverkeygen-req to the owning Device Management Service. 
+A device requests server-side key generation by issuing a fdo.csr:serverkeygen-req to the owning Device Management Service. 
 
-The request uses the same format as the fdo.csr.simpleenroll-req and the fdo.csr.simplereenroll-req messages. The owning Device
+The request uses the same format as the fdo.csr:simpleenroll-req and the fdo.csr:simplereenroll-req messages. The owning Device
 Management Service and the certificate enrollment servers SHOULD treat the CSR as it would any enroll or re-enroll CSR, as 
 described in RFC 7030. The only distinction is that the public key values and signature in the CSR MUST be ignored. These are
 included in the request only to allow re-use of existing libraries for generating and parsing such requests.
@@ -98,7 +98,7 @@ If the device wants to receive an private key encrypted end-to-end from the devi
 
 This specification utilizes the latter. A future version of this specification, or another FSIM, may introduce the object layer security solution.
 
-A successful response is returned in the fdo.csr.serverkeygen-res in form of a multipart/mixed MIME payload with boundary
+A successful response is returned in the fdo.csr:serverkeygen-res in form of a multipart/mixed MIME payload with boundary
 set to "fdo" containing two parts: one part is the private key and the other part is the certificate.  
 
 The certificate is an "application/pkcs7-mime" and exactly matches the certificate response to simpleenroll response message.
@@ -109,7 +109,7 @@ additional encryption on top of that provided by FDO.
 Since this specification does not use the object encryption, the private key data MUST be placed in an "application/pkcs8". 
 An "application/pkcs8" part consists of the base64-encoded DER-encoded PrivateKeyInfo with a Content-Transfer-Encoding of "base64" [RFC2045].
 
-An example of a successful response to a fdo.csr.serverkeygen-req might look like:
+An example of a successful response to a fdo.csr:serverkeygen-req might look like:
 
 ```
 --fdo
@@ -125,32 +125,32 @@ MIIDRQYJK..//Base64-encoded certificate//..dDoQAxAA==
 --fdo--
 ```
 
-## fdo.csr.csrattrs-req and fdo.csr.csrattrs-res
+## fdo.csr:csrattrs-req and fdo.csr:csrattrs-res
 
-A device requests CSR attributes from the owning Device Management Service and consequently from the certificate enrollment servers with a fdo.csr.csrattrs-req message. The value carried in the fdo.csr.csrattrs-req message is ignored by the owning Device Management Service. 
+A device requests CSR attributes from the owning Device Management Service and consequently from the certificate enrollment servers with a fdo.csr:csrattrs-req message. The value carried in the fdo.csr:csrattrs-req message is ignored by the owning Device Management Service. 
 
 A successful response informs the device about the fields to include in a CSR. This Certificate Signing Request (CSR) attribute messages is encoded in application/csrattrs format, as defined in Section 4.5.2 of RFC 7030.
 
-## fdo.csr.error
+## fdo.csr:error
 
-The following table lists error codes returned by the fdo.csr.error message. 
+The following table lists error codes returned by the fdo.csr:error message. 
 
 | Error Number          | Description               | Sent in response to           |
 |:----------------------|:--------------------------|:------------------------------|
-| 1                     | Bad request.              | fdo.csr.simpleenroll-req      |
-|                       |                           | fdo.csr.simplereenroll-req    |
-|                       |                           | fdo.csr.serverkeygen-req      | 
-|                       |                           | fdo.csr.csrattrs-req          | 
-| 2                     | Unauthorized.             | fdo.csr.simpleenroll-req      |
-|                       |                           | fdo.csr.simplereenroll-req    |
-|                       |                           | fdo.csr.serverkeygen-req      | 
-|                       |                           | fdo.csr.csrattrs-req          | 
-| 3                     | Feature not supported.    | fdo.csr.csrattrs-req          |
-|                       |                           | fdo.csr.serverkeygen-req      |
-| 4                     | Rate exceeded. Try later. | fdo.csr.simpleenroll-req      |
-|                       |                           | fdo.csr.simplereenroll-req    |
-|                       |                           | fdo.csr.serverkeygen-req      | 
-| 5                     | Unsupported format.       | fdo.csr.cacerts-req           |
+| 1                     | Bad request.              | fdo.csr:simpleenroll-req      |
+|                       |                           | fdo.csr:simplereenroll-req    |
+|                       |                           | fdo.csr:serverkeygen-req      | 
+|                       |                           | fdo.csr:csrattrs-req          | 
+| 2                     | Unauthorized.             | fdo.csr:simpleenroll-req      |
+|                       |                           | fdo.csr:simplereenroll-req    |
+|                       |                           | fdo.csr:serverkeygen-req      | 
+|                       |                           | fdo.csr:csrattrs-req          | 
+| 3                     | Feature not supported.    | fdo.csr:csrattrs-req          |
+|                       |                           | fdo.csr:serverkeygen-req      |
+| 4                     | Rate exceeded. Try later. | fdo.csr:simpleenroll-req      |
+|                       |                           | fdo.csr:simplereenroll-req    |
+|                       |                           | fdo.csr:serverkeygen-req      | 
+| 5                     | Unsupported format.       | fdo.csr:cacerts-req           |
 
 An error of type 'unauthorized' is used when the request by the client cannot be processed by the Device Management Service, Certification Authority (CA) or Registration Authority (RA) due to insufficient permissions. The error of type 'bad request' is used when the request is malformed and parsing failed. 
 
@@ -162,12 +162,12 @@ The following table describes an example exchange for the CSR FSIM:
 
 | Device sends  | Owner sends | Meaning   |
 |:----------------------|:----------------------------------|:------------------------|
-| `[fdo.csr.active, True]`  | - | Device instructs owner to activate the CSR FSIM |
-| `[fdo.csr.cacerts-req, 281]` | - | Request for CA certs |
-| - | `[fdo.csr.cacerts-res, (tstr)abc...]` | CA cert response |
-| `[fdo.csr.simpleenroll-req, (tstr)cde...]` | -  | Certificate enrollment request |
-| - | `[fdo.csr.simpleenroll-res, (tstr)efa...]` | Certificate |
-| `[fdo.csr.active, False]`  | - | Device instructs owner to deactivate the CSR FSIM |
+| `[fdo.csr:active, True]`  | - | Device instructs owner to activate the CSR FSIM |
+| `[fdo.csr:cacerts-req, 281]` | - | Request for CA certs |
+| - | `[fdo.csr:cacerts-res, (tstr)abc...]` | CA cert response |
+| `[fdo.csr:simpleenroll-req, (tstr)cde...]` | -  | Certificate enrollment request |
+| - | `[fdo.csr:simpleenroll-res, (tstr)efa...]` | Certificate |
+| `[fdo.csr:active, False]`  | - | Device instructs owner to deactivate the CSR FSIM |
 
 ## Payload Encoding Summary
 
